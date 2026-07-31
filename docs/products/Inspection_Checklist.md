@@ -2,37 +2,41 @@
 
 
 
-\# Visual Inspection
+\## Visual Inspection
+
+
 
 \- Correct Product
 
 \- Correct Orientation
 
-\- No Missing Feature
-
-
-
-\# Dimensional Inspection
-
-\- Correct Outer Diameter (OD)
-
-\- Correct Inner Diameter (ID)
-
-\- Correct Width
-
-\- Correct Height
-
-\- Correct Groove Width
-
-\- Correct Groove Depth
-
-\- Correct Hole Diameter
+\- Presence of Grooves
 
 \- Correct Chamfer
 
 
 
-\# Surface Inspection
+\## Dimensional Inspection
+
+
+
+\- Outer Diameter (OD): Ø0.500 inch
+
+\- Inner Diameter (ID): Ø0.380 ±0.005 inch
+
+\- Overall Length: 1.750 +0.002 / -0.005 inch
+
+\- Groove Count: 12 TPI (Needs Client Confirmation)
+
+\- Groove Width: Needs Client Confirmation
+
+\- Groove Spacing: Needs Client Confirmation
+
+
+
+\## Surface Inspection
+
+
 
 \- No Crack
 
@@ -40,11 +44,13 @@
 
 \- No Burr
 
-\- No Surface Damage(Dent/Rust/Corrosion)
+\- No Surface Damage
 
 
 
-\# Status
+\## Status
 
-Checklist will be updated after final product specification confirmation.
+
+
+Checklist updated according to client engineering drawing.
 

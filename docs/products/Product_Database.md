@@ -6,41 +6,43 @@
 
 
 
-Product ID: P001
+Drawing Number: 106126
 
 
 
-Product Name:
+Revision: C
 
-To be confirmed
+
+
+Product Type:
+
+Cylindrical Grooved Bushing (Needs Client Confirmation)
 
 
 
 Material:
 
-To be confirmed
+Needs Client Confirmation
 
 
 
-Description:
+Heat Treatment:
 
-Machined industrial component used for automated visual and dimensional quality inspection
+55–45 HRC
 
-
-
-Expected Features:
-
-\- Correct geometry
-
-\- Proper machining
-
-\- No visible defects
+Minimum Case Depth: 0.015
 
 
 
-Tolerance:
+Surface Finish:
 
-To be confirmed from engineering drawing.
+\- Copper Underplate: 2–5 micron
+
+\- Nickel Plating: 2–5 micron
+
+\- Minimum 4 Hour Salt Spray
+
+\- No Visible Iron Oxidation Allowed
 
 
 
@@ -56,5 +58,5 @@ Inspection Type:
 
 Status:
 
-Pending product specification confirmation.
+Updated according to client engineering drawing.
 

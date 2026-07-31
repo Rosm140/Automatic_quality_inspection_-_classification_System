@@ -10,21 +10,21 @@ The following parameters will be inspected during quality inspection.
 
 
 
-\- Outer Diameter (OD) - To be confirmed
+\- Outer Diameter (OD): Ø0.500 inch
 
-\- Inner Diameter (ID) - To be confirmed
+\- Inner Diameter (ID): Ø0.380 ±0.005 inch
 
-\- Width - To be confirmed
+\- Overall Length: 1.750 +0.002 / -0.005 inch
 
-\- Height - To be confirmed
+\- Groove Count: 12 TPI (Needs Client Confirmation)
 
-\- Groove Width - To be confirmed
+\- Groove Width: Needs Client Confirmation
 
-\- Groove Depth - To be confirmed
+\- Groove Spacing: Needs Client Confirmation
 
-\- Hole Diameter - To be confirmed
+\- Chamfer: 15°
 
-\- Chamfer - To be confirmed
+\- Chamfer Measurement: 1.625 ±0.010 inch (Gauge Block Method)
 
 
 
@@ -32,5 +32,9 @@ The following parameters will be inspected during quality inspection.
 
 
 
-The exact dimensions and tolerances will be finalized after engineering drawing verification and product calibration.
+Only values available in the client engineering drawing are listed.
+
+
+
+Any missing values require client confirmation.
 
