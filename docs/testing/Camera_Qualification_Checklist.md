@@ -39,3 +39,33 @@ ____________________________________________________
 ____________________________________________________
 
 ____________________________________________________
+
+# Camera Qualification Checklist
+
+## Hardware
+
+- [ ] Camera detected
+- [ ] USB connection stable
+- [ ] Camera preview working
+
+## Image Quality
+
+- [ ] Focus adjusted
+- [ ] Image sharp
+- [ ] Product completely visible
+
+## Lighting
+
+- [ ] Ring light working
+- [ ] Reflection acceptable
+- [ ] Background finalized
+
+## Ready for Calibration
+
+Status: yes
+
+PASS 
+
+Remarks:
+
+___________________________

@@ -22,3 +22,24 @@ No issues found during documentation verification.
 
 ## Remarks
 Development modules will be validated after completion by team members.
+
+
+# Validation Report
+
+## Sprint
+Sprint 03
+
+| Module | Status |
+|---------|--------|
+| Project Structure | PASS |
+| Utility Layer | PASS |
+| Camera Connected | PASS |
+| Camera Qualification | Pending |
+| Camera Calibration | Pending |
+| Dataset Collection | Pending |
+| YOLO Training | Pending |
+| Measurement Module | Pending |
+| System Integration | Pending |
+
+Verified By:
+Member D (QA & Validation)

@@ -68,3 +68,62 @@ Camera Qualification & Calibration
 ---
 
 Prepared By: Member D
+
+
+---
+
+## Date
+05/08/2026
+
+### Sprint
+Sprint 03
+
+### Phase
+Vision System Qualification
+
+### Objective
+Prepare the project for Camera Qualification.
+
+### Work Completed
+
+#### Member A
+- Utility Layer completed.
+- Camera calibration workspace prepared.
+
+#### Member B
+- Sony IMX335 camera received.
+- Camera connected successfully.
+- Ring light verified.
+
+#### Member C
+- Product documentation reviewed.
+- Dataset planning continued.
+
+#### Member D
+- Updated Engineering Logbook.
+- Updated Issue Tracker.
+- Prepared Camera Qualification Checklist.
+- Verified current project status.
+
+---
+
+### Verification
+
+- [x] Utility Layer verified
+- [x] Camera detected
+- [x] Ring light available
+- [ ] Camera calibration pending
+
+---
+
+### Tomorrow's Plan
+
+- Camera Qualification
+- Camera Calibration
+- Checkerboard image capture
+
+---
+
+### Overall Progress
+
+35%
