@@ -1,0 +1,17 @@
+calibration:
+  camera_name: "IMX335 USB Camera"
+  resolution:
+    width: 1280
+    height: 720
+  checkerboard:
+    columns: 9
+    rows: 6
+    square_size_mm: 20.0
+  files:
+    parameters: "calibration/calibration_result.json"
+    camera_matrix: "calibration/camera_matrix.npy"
+    distortion_coefficients: "calibration/distortion_coefficients.npy"
+  scale:
+    pixels_per_mm: 4.9701609632
+    status: "experimental"
+    validated_against_caliper: false

@@ -32,6 +32,18 @@ The complete inspection process is automated from image capture to defect classi
 
 # System Workflow
 
+## Saved-image inspection pipeline
+
+Run the dimensional inspection pipeline on a saved image from the project root:
+
+```powershell
+python -m src.measurement.pipeline "data/calibration/calibration_001_undistorted.jpg"
+```
+
+The command prints a JSON result. OD and ID are reported in pixels because no
+validated physical scale or product acceptance criteria are configured. Product
+validation remains unevaluated, and defect detection is not implemented.
+
 ```
 Product Placement
         │
