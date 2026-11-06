@@ -9,6 +9,8 @@ MAX_FIT_ERROR_PX = 2.5
 MAX_CENTER_DIFFERENCE_PX = 3.0
 MIN_ID_OD_RATIO = 0.55
 MAX_ID_OD_RATIO = 0.90
+NOMINAL_ID_OD_RATIO = 9.652 / 12.7
+MAX_NOMINAL_RATIO_DEVIATION = 0.03
 
 def check_measurement_quality(
     id_fit_error_px,
@@ -33,6 +35,11 @@ def check_measurement_quality(
         "id_od_ratio_ok": (
             np.isfinite(id_od_ratio)
             and MIN_ID_OD_RATIO <= id_od_ratio <= MAX_ID_OD_RATIO
+        ),
+        "nominal_ratio_consistency_ok": (
+            np.isfinite(id_od_ratio)
+            and abs(id_od_ratio - NOMINAL_ID_OD_RATIO)
+            <= MAX_NOMINAL_RATIO_DEVIATION
         ),
     }
 
@@ -120,10 +127,8 @@ def _failure(status, reason):
 
 def measure_od_id(roi, edges):
     """
-    Estimate OD and ID in pixels using Hough circles and robust fitting.
-
-    Quality checks are provisional geometric screens, not proof of
-    physical dimensional accuracy.
+    Estimate ID/OD from radial edge peaks around the ROI center.
+    Returns pixel estimates; not validated physical measurements.
     """
     if roi is None or roi.size == 0:
         raise ValueError("Product ROI is empty")
@@ -135,71 +140,69 @@ def measure_od_id(roi, edges):
         raise ValueError("Product ROI must be a 3-channel BGR image")
 
     if roi.shape[:2] != edges.shape[:2]:
-        raise ValueError(
-            f"ROI and edge dimensions differ: "
-            f"{roi.shape[:2]} vs {edges.shape[:2]}"
-        )
+        raise ValueError("ROI and edge dimensions differ")
 
-    gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (5, 5), 1.2)
+    h, w = edges.shape[:2]
+    cx0, cy0 = w / 2.0, h / 2.0
 
-    circles = cv2.HoughCircles(
-        blurred,
-        cv2.HOUGH_GRADIENT,
-        dp=1.0,
-        minDist=10,
-        param1=100,
-        param2=15,
-        minRadius=15,
-        maxRadius=150,
-    )
-
-    if circles is None:
-        return _failure(
-            "no_circles_detected",
-            "Hough circle detection found no candidates.",
-        )
-
-    circles = np.round(circles[0]).astype(int)
     ys, xs = np.where(edges > 0)
-    edge_points = np.column_stack((xs, ys))
-
-    if len(edge_points) < 40:
+    if len(xs) < 40:
         return _failure(
             "insufficient_edge_points",
             "Too few edge pixels are available for fitting.",
         )
 
+    # Radial distance of every edge pixel from the ROI center.
+    distances = np.hypot(xs - cx0, ys - cy0)
+
+    # Create a radial histogram; circular boundaries create peaks.
+    max_radius = min(h, w) / 2.0
+    bins = np.arange(0, max_radius + 1.0, 1.0)
+    counts, bin_edges = np.histogram(distances, bins=bins)
+    radii = (bin_edges[:-1] + bin_edges[1:]) / 2.0
+
+    # Find local peaks with enough edge support.
+    peaks = []
+    for i in range(2, len(counts) - 2):
+        if (
+            counts[i] >= counts[i - 1]
+            and counts[i] >= counts[i + 1]
+            and counts[i] >= 8
+            and 15 <= radii[i] <= max_radius - 2
+        ):
+            peaks.append((float(radii[i]), int(counts[i])))
+
+    if len(peaks) < 2:
+        return _failure(
+            "insufficient_radial_peaks",
+            "Could not identify two circular edge boundaries.",
+        )
+
+    # Keep strong peaks, then evaluate plausible inner/outer pairs.
+    peaks.sort(key=lambda p: p[1], reverse=True)
+    peaks = peaks[:20]
+
     expected_ratio = 0.380 / 0.500
     pairs = []
 
-    for i in range(len(circles)):
-        x1, y1, r1 = circles[i]
-
-        for j in range(i + 1, len(circles)):
-            x2, y2, r2 = circles[j]
-
-            inner_radius, outer_radius = sorted((r1, r2))
-
-            if inner_radius <= 0 or outer_radius <= inner_radius:
+    for inner_radius, inner_support in peaks:
+        for outer_radius, outer_support in peaks:
+            if outer_radius <= inner_radius:
                 continue
 
             ratio = inner_radius / outer_radius
-            center_distance = float(np.hypot(x1 - x2, y1 - y2))
-
-            if not 0.55 <= ratio <= 0.90 or center_distance > 18:
+            if not 0.55 <= ratio <= 0.90:
                 continue
 
+            # Prefer the expected ratio, with edge support as a tie-breaker.
             score = (
-                abs(ratio - expected_ratio) * 2
-                + center_distance / 18
+                abs(ratio - expected_ratio) * 2.0
+                - (inner_support + outer_support) / 1000.0
             )
 
             pairs.append(
                 (
                     score,
-                    (x1 + x2) / 2,
-                    (y1 + y2) / 2,
                     inner_radius,
                     outer_radius,
                 )
@@ -207,25 +210,30 @@ def measure_od_id(roi, edges):
 
     if not pairs:
         return _failure(
-            "no_valid_circle_pair",
-            "No plausible concentric ID/OD candidate pair was found.",
+            "no_valid_radial_pair",
+            "No plausible inner/outer radial edge pair was found.",
         )
 
-    _, cx, cy, inner_radius, outer_radius = min(
-        pairs, key=lambda pair: pair[0]
+    print("\n--- RADIAL PAIR CANDIDATES ---")
+    for score, inner_r, outer_r in sorted(pairs, key=lambda p: p[0])[:10]:
+        print(
+            f"ID radius={inner_r:.1f}, "
+            f"OD radius={outer_r:.1f}, "
+            f"ratio={inner_r / outer_r:.4f}, "
+            f"score={score:.4f}"
+        )
+    print("-----------------------------\n")
+
+    _, inner_radius, outer_radius = min(
+        pairs, key=lambda p: p[0]
     )
 
-    radial_distances = np.hypot(
-        edge_points[:, 0] - cx,
-        edge_points[:, 1] - cy,
-    )
+    # Select edge pixels near each radial peak.
+    id_mask = np.abs(distances - inner_radius) <= 2.5
+    od_mask = np.abs(distances - outer_radius) <= 2.5
 
-    id_points = edge_points[
-        np.abs(radial_distances - inner_radius) <= 4.0
-    ]
-    od_points = edge_points[
-        np.abs(radial_distances - outer_radius) <= 4.0
-    ]
+    id_points = np.column_stack((xs[id_mask], ys[id_mask]))
+    od_points = np.column_stack((xs[od_mask], ys[od_mask]))
 
     id_fit = fit_circle_robust(id_points)
     od_fit = fit_circle_robust(od_points)
@@ -245,7 +253,6 @@ def measure_od_id(roi, edges):
 
     ratio = id_fit["diameter"] / od_fit["diameter"]
 
-    
     quality = check_measurement_quality(
         id_fit_error_px=id_fit["fit_error_px"],
         od_fit_error_px=od_fit["fit_error_px"],
@@ -256,7 +263,19 @@ def measure_od_id(roi, edges):
     quality_checks = quality["checks"]
     failure_reasons = quality["failure_reasons"]
 
-    result = {
+    print("\n--- MEASUREMENT DEBUG ---")
+    print("ROI size:", w, "x", h)
+    print("ROI center:", cx0, cy0)
+    print("Selected ID radius:", inner_radius)
+    print("Selected OD radius:", outer_radius)
+    print("ID fit:", id_fit)
+    print("OD fit:", od_fit)
+    print("ID/OD ratio:", ratio)
+    print("Quality checks:", quality_checks)
+    print("Failure reasons:", failure_reasons)
+    print("-------------------------\n")
+
+    return {
         "status": (
             "estimated" if not failure_reasons
             else "quality_check_failed"
@@ -279,7 +298,7 @@ def measure_od_id(roi, edges):
         "failure_reasons": failure_reasons,
         "units": "pixels",
         "validated": False,
-        "method": "Hough pair + robust circle fit",
+        "method": "Radial edge peaks + robust circle fit",
     }
 
-    return result
+    

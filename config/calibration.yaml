@@ -12,6 +12,6 @@ calibration:
     camera_matrix: "calibration/camera_matrix.npy"
     distortion_coefficients: "calibration/distortion_coefficients.npy"
   scale:
-    pixels_per_mm: 4.9701609632
+    pixels_per_mm: 3.4992
     status: "experimental"
     validated_against_caliper: false

@@ -75,12 +75,32 @@ def inspect_image(image_path: str | Path) -> dict:
         result["errors"].append("Dimensional measurement returned an invalid result (expected an object).")
         return result
 
+    
+   
+    measurement_status = measurement.get("status")
+
+    if measurement_status != "estimated":
+        reasons = measurement.get("failure_reasons") or []
+        reason = (
+            "; ".join(reasons)
+            or measurement.get("reason")
+            or measurement_status
+            or "measurement status is missing or invalid"
+            )
+        result["errors"].append(
+            f"Dimensional measurement failed: {reason}"
+        )
+        return result
+
     od = measurement.get("od_px")
     inner_diameter = measurement.get("id_px")
+
     if not _valid_diameter(od) or not _valid_diameter(inner_diameter):
-        reason = measurement.get("reason") or measurement.get("status") or "missing or invalid OD/ID values"
-        result["errors"].append(f"Dimensional measurement failed: {reason}")
+        result["errors"].append(
+            "Dimensional measurement failed: missing or invalid OD/ID values"
+            )
         return result
+
 
     result["od"] = float(od)
     result["id"] = float(inner_diameter)

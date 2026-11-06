@@ -33,7 +33,6 @@ def test_measure_od_id_rejects_empty_roi():
     with pytest.raises(ValueError, match="Product ROI is empty"):
         measure_od_id(np.array([]), np.array([]))
 
-{'cx': 49.99420548822845, 'cy': 39.973806267531664, 'radius': 20.007075671917654, 'diameter': 40.01415134383531, 'fit_error_px': 0.2200630292285643, 'points':200}
 
 
 def test_fit_circle_handles_small_noise():
